@@ -3,6 +3,7 @@ const path = require('path');
 
 const cookieSession = require('cookie-session');
 const createError = require('http-errors');
+const bodyParser = require('body-parser')
 const FeedbackService = require('./services/FeedbackService');
 const SpeakersService = require('./services/SpeakerService');
 
@@ -22,6 +23,7 @@ app.use(
   })
 );
 
+app.use(bodyParser.urlencoded({extended:true}))
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views'));
 
@@ -52,11 +54,12 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
-  console.log(err)
+  console.log(err);
   const status = err.status || 500;
   res.locals.status = status;
   res.status(status);
   res.render('error');
+  return next()
 });
 
 app.listen(port, () => {
